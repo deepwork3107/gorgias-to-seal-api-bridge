@@ -105,7 +105,8 @@ app.get("/api/subscriptions", checkAuth, async (req, res) => {
         items: (s.items || []).map(i => ({ title: i.title, qty: i.quantity, id: i.id })),
         discounts: s.discount_codes || [],
         billing_attempts: billingAttempts,
-        next_billing_attempt: nextBillingAttempt
+        next_billing_attempt: nextBillingAttempt, // Use next_billing_attempt.id for skip action body
+        next_billing_attempt_id: nextBillingAttempt ? nextBillingAttempt.id : null
       };
     });
 
@@ -137,7 +138,7 @@ app.put("/api/subscription/:subscriptionId/skip/:attemptId", checkAuth, async (r
     const payload = {
       id: billingAttemptId,
       subscription_id: subscriptionId,
-      action: "skip"
+      action
     };
 
     const updateResp = await callSeal(`/subscription-billing-attempt`, {
